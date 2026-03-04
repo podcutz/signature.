@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You Noman</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a1a;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            color: #eeeeee;
+            overflow-x: hidden; /* Prevent horizontal scroll on mobile */
+        }
+
+        .container {
+            text-align: center;
+            margin-top: clamp(5rem, 15vh, 20rem); /* Fluid top margin */
+            padding: 1rem 2rem;
+            animation: fadeIn 1.2s ease-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 800px; /* Ensures text doesn't span too wide on desktop */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .highlight {
+            color: #ffffff;
+            font-weight: 800;
+            display: inline-block; /* Helps with scaling */
+        }
+
+        .message {
+            font-size: clamp(1.5rem, 6vw, 2.5rem); /* Fluid typography */
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            line-height: 1.3;
+            color: #d1d1d1;
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(
+                90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 1) 50%, 
+                transparent 100%
+            );
+            width: 70%; /* Stays relative to text container */
+            max-width: 400px; /* Prevents line from getting too long on ultra-wide screens */
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin-top: 25vh; /* Better positioning for small phones */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="message">
+            Thank You! <span class="highlight">Noman</span><br>
+            for your cooperation.
+        </h1>
+        <div class="divider"></div>
+    </div>
+
+</body>
+</html>
