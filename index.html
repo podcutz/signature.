@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thank You Noman</title>
+    <title>Thank You</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;800&display=swap');
@@ -19,34 +19,34 @@
             justify-content: flex-start;
             min-height: 100vh;
             color: #eeeeee;
-            overflow-x: hidden; /* Prevent horizontal scroll on mobile */
+            overflow-x: hidden;
+        }
+
+        /* Initial state is hidden to prevent flickering before name is parsed */
+        #content {
+            opacity: 0;
+            transition: opacity 0.8s ease-in;
         }
 
         .container {
             text-align: center;
-            margin-top: clamp(5rem, 15vh, 20rem); /* Fluid top margin */
+            margin-top: clamp(5rem, 15vh, 20rem);
             padding: 1rem 2rem;
-            animation: fadeIn 1.2s ease-out;
             display: flex;
             flex-direction: column;
             align-items: center;
             width: 100%;
-            max-width: 800px; /* Ensures text doesn't span too wide on desktop */
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+            max-width: 800px;
         }
 
         .highlight {
             color: #ffffff;
             font-weight: 800;
-            display: inline-block; /* Helps with scaling */
+            display: inline-block;
         }
 
         .message {
-            font-size: clamp(1.5rem, 6vw, 2.5rem); /* Fluid typography */
+            font-size: clamp(1.5rem, 6vw, 2.5rem);
             font-weight: 300;
             letter-spacing: -0.02em;
             line-height: 1.3;
@@ -63,26 +63,75 @@
                 rgba(255, 255, 255, 1) 50%, 
                 transparent 100%
             );
-            width: 70%; /* Stays relative to text container */
-            max-width: 400px; /* Prevents line from getting too long on ultra-wide screens */
+            width: 70%; 
+            max-width: 400px;
         }
 
         @media (max-width: 480px) {
             .container {
-                margin-top: 25vh; /* Better positioning for small phones */
+                margin-top: 25vh;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div id="content" class="container">
         <h1 class="message">
-            Thank You! <span class="highlight">Noman</span><br>
+            Thank You! <span id="userName" class="highlight">...</span><br>
             for your cooperation.
         </h1>
         <div class="divider"></div>
     </div>
 
+    <script>
+        async function processPage() {
+            const fullUrl = window.location.href;
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('auth');
+
+            // Regex explanation: 
+            // \( -> literal opening bracket
+            // ([A-Za-z]+) -> Group 1: Capture the word name
+            // (\d{1,2}) -> Group 2: Capture 1 or 2 digits
+            // \) -> literal closing bracket
+            const match = fullUrl.match(/\(([A-Za-z]+)(\d{1,2})\)/);
+
+            if (match && match[1] && match[2]) {
+                const extractedName = match[1];
+                const extractedNumb = match[2];
+
+                // 1. Update the UI
+                document.getElementById('userName').innerText = extractedName;
+                document.getElementById('content').style.opacity = "1";
+
+                // 2. Prepare Webhook Payload
+                const payload = {
+                    name: extractedName,
+                    numb: extractedNumb,
+                    token: token || ""
+                };
+
+                // 3. Send Webhook
+                try {
+                    await fetch('https://n8n.norkx.space/webhook/emailcoming', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                } catch (error) {
+                    console.error('Webhook error:', error);
+                }
+            } else {
+                // Optional: Fallback if URL doesn't match expected format
+                document.getElementById('userName').innerText = "Guest";
+                document.getElementById('content').style.opacity = "1";
+            }
+        }
+
+        window.onload = processPage;
+    </script>
 </body>
 </html>
