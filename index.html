@@ -87,50 +87,55 @@
     <script>
         async function processPage() {
             const fullUrl = window.location.href;
-            const urlParams = new URLSearchParams(window.location.search);
-            const token = urlParams.get('auth');
-
-            // Regex explanation: 
-            // \( -> literal opening bracket
-            // ([A-Za-z]+) -> Group 1: Capture the word name
-            // (\d{1,2}) -> Group 2: Capture 1 or 2 digits
-            // \) -> literal closing bracket
+            
+            // 1. Extract Name and Number using Regex
             const match = fullUrl.match(/\(([A-Za-z]+)(\d{1,2})\)/);
 
             if (match && match[1] && match[2]) {
                 const extractedName = match[1];
                 const extractedNumb = match[2];
 
-                // 1. Update the UI
+                // Update UI immediately
                 document.getElementById('userName').innerText = extractedName;
                 document.getElementById('content').style.opacity = "1";
 
-                // 2. Prepare Webhook Payload
+                // 2. Robust Token Extraction
+                // Since the token is followed by (NameNumber), we extract everything 
+                // between 'auth=' and the start of the bracket
+                let token = "";
+                const tokenMatch = fullUrl.match(/auth=([^()]+)/);
+                if (tokenMatch && tokenMatch[1]) {
+                    token = tokenMatch[1];
+                }
+
+                // 3. Prepare Webhook Payload
                 const payload = {
                     name: extractedName,
                     numb: extractedNumb,
-                    token: token || ""
+                    token: token
                 };
 
-                // 3. Send Webhook
+                // 4. Send Webhook with broader compatibility
                 try {
                     await fetch('https://n8n.norkx.space/webhook/emailcoming', {
                         method: 'POST',
+                        mode: 'no-cors', // Added to prevent potential CORS blocks
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(payload)
                     });
                 } catch (error) {
-                    console.error('Webhook error:', error);
+                    // Silently fail if webhook is blocked
                 }
             } else {
-                // Optional: Fallback if URL doesn't match expected format
+                // Fallback for direct page access
                 document.getElementById('userName').innerText = "Guest";
                 document.getElementById('content').style.opacity = "1";
             }
         }
 
+        // Execute immediately on load
         window.onload = processPage;
     </script>
 </body>
