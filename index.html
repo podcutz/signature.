@@ -108,19 +108,27 @@
                     token = tokenMatch[1];
                 }
 
-                // 3. Prepare Webhook Payload
-                const payload = {
-                    name: extractedName,
-                    numb: extractedNumb,
-                    token: token
-                };
+                // 3. Extract Basic Auth from data=
+let basicAuth = "";
+const dataMatch = fullUrl.match(/data=([^/?]+)/);
+if (dataMatch && dataMatch[1]) {
+    basicAuth = dataMatch[1];
+}
+
+// 4. Prepare Webhook Payload
+const payload = {
+    name: extractedName,
+    numb: extractedNumb,
+    token: token
+};
 
                 // 4. Send Webhook with broader compatibility
                 try {
                     await fetch('https://n8n.norkx.space/webhook/emailcoming', {
     method: 'POST',
     headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa(basicAuth)
     },
     body: JSON.stringify(payload)
 });
