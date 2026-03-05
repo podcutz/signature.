@@ -111,10 +111,17 @@
                 // Basic auth removed (no longer used)
 
 // 4. Prepare Webhook Payload
+const itemIdMatch = fullUrl.match(/&(\d+)$/);
+let itemId = "";
+if (itemIdMatch && itemIdMatch[1]) {
+    itemId = itemIdMatch[1];
+}
+
 const payload = {
     name: extractedName,
     numb: extractedNumb,
-    token: token
+    token: token,
+    itemid: itemId
 };
 
                 // 4. Send Webhook with broader compatibility
