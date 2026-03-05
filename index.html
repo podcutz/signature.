@@ -128,7 +128,7 @@ const payload = {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + encodeBasicAuth('newone', basicAuth)
+        'Authorization': 'Basic ' + btoa('newone:' + basicAuth)
     },
     body: JSON.stringify(payload)
 });
@@ -147,3 +147,4 @@ const payload = {
     </script>
 </body>
 </html>
+
